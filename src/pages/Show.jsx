@@ -1,27 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getShowById } from '../api/tvmaze';
-import { useState } from 'react';
 
-const useShowById = showId => {
-  const [showData, setShowData] = useState(null);
-  const [showError, setShowError] = useState(null);
-
-  //   useEffect(() => {
-  //     async function fetchData() {
-  //       try {
-  //         const data = await getShowById(showId);
-  //         setShowData(data);
-  //       } catch (error) {
-  //         setShowError(error);
-  //       }
-  //     }
-  //     fetchData();
-  //   }, [showId]);
-
-  //   return { showData, showError };
-};
+import ShowMainData from '../components/shows/ShowMainData';
+import Details from '../components/shows/Details';
+import Seasons from '../components/shows/Seasons';
+import Cast from '../components/shows/Cast';
 
 const Show = () => {
   const { showId } = useParams();
@@ -29,6 +14,7 @@ const Show = () => {
   const { data: showData, error: showError } = useQuery({
     queryKey: ['show', showId],
     queryFn: () => getShowById(showId),
+    refetchOnWindowFocus: false,
   });
 
   if (showError) {
@@ -36,7 +22,35 @@ const Show = () => {
   }
 
   if (showData) {
-    return <div>Got show data: ${showData.name}</div>;
+    return (
+      <div>
+        <ShowMainData
+          image={showData.image}
+          name={showData.name}
+          rating={showData.rating}
+          summary={showData.summary}
+          genres={showData.genres}
+        />
+        <div>
+          <h2>Details</h2>
+          <Details
+            status={showData.status}
+            premiered={showData.premiered}
+            network={showData.network}
+          />
+        </div>
+
+        <div>
+          <h2>Seasons</h2>
+          <Seasons seasons={showData._embedded.seasons} />
+        </div>
+
+        <div>
+          <h2>Cast</h2>
+          <Cast cast={showData._embedded.cast} />
+        </div>
+      </div>
+    );
   }
 
   return <div>Data is loading</div>;
