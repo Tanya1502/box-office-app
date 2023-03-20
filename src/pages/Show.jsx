@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-// import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getShowById } from '../api/tvmaze';
 
@@ -10,7 +10,7 @@ import Cast from '../components/shows/Cast';
 
 const Show = () => {
   const { showId } = useParams();
-  // const { showData, showError } = useShowById(showId);
+
   const { data: showData, error: showError } = useQuery({
     queryKey: ['show', showId],
     queryFn: () => getShowById(showId),
@@ -24,6 +24,8 @@ const Show = () => {
   if (showData) {
     return (
       <div>
+        <Link to="/">Go back to home</Link>
+
         <ShowMainData
           image={showData.image}
           name={showData.name}
